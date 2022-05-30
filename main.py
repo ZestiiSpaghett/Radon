@@ -4,7 +4,7 @@ import time, os, sys, socket, threading, struct, binascii,secrets, random
 
 localhost = socket.gethostbyname(socket.gethostname())
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-rak = b'\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78\x00\x5c'
+rak = b'\x00\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78\x00\x5c'
 # Combination above sets the protocol to RakNet
 
 os.system('cls')
@@ -92,7 +92,7 @@ if __name__ == "__main__":
         print(message)
         if id == 1:
             sessionID = ''.join(secrets.choice(num) for i in range(20))
-            package = f'MCPE;{motd};503;1.18.32;{players};{max};{sessionID};{name};{gamemode.capitalize()};0;{port};{port+1}'
+            package = f'MCPE;{motd};503;1.18.32;{players};{max};{sessionID};{name};{gamemode.capitalize()};1;{port};{port+1};'
             packetID = b'\x1c\x00\x00\x00\x00\x00\x00' + message[8:9] + b'\x84\xad\x43\xa1\x4e\xc2\x4e\xb1'
             payload = pack()
 
