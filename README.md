@@ -3,8 +3,11 @@ Minecraft Bedrock &amp; Java Cross Compatibility Software
 
 # Why use Radon?
 ✔️ Radon is a Bedrock based server, making it use less resources and run a lot faster.
+
 ✔️ Radon automatically detects and interprets Minecraft Java player packets so both editions of the game are capable of joining.
+
 ✔️ This project is 100% open source.
+
 ✔️ The Radon project will continued to be worked on, so it will improve over time.
 
 Citations:
