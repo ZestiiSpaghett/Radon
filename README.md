@@ -15,6 +15,9 @@ https://www.pythonpool.com/is-python-compiled-interpreted-or-both/
 # Notes
 This is a work in progress, it does NOT work at the moment.
 
+# Updates/Checklist
+Switching to C++
+
 # Info
 This is a list of the packets used by MCBE: https://github.com/NiclasOlofsson/MiNET/blob/master/src/MiNET/MiNET/Net/MCPE%20Protocol%20Documentation.md
 
