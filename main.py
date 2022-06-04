@@ -1,11 +1,18 @@
-import time, os, sys, socket, threading, struct, binascii,secrets, random
-
+import time, os, sys, socket, threading, struct, binascii,secrets, random, keyboard
+import modules.raknet as raknet
 #     from plugins import *
 
-localhost = socket.gethostbyname(socket.gethostname())
+seed = b'06705523625395936369'
+
+keyboard.add_hotkey('a', lambda: resetSeed())
+
+def resetSeed():
+    global seed
+    seed = ''.join(secrets.choice(num) for i in range(20))
+
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-rak = b'\x00\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78\x00\x5c'
-# Combination above sets the protocol to RakNet
+
+localhost = socket.gethostbyname(socket.gethostname())
 
 os.system('cls')
 num = ['0','1','2','3','4','5','6','7','8','9']
@@ -14,29 +21,12 @@ primes = [11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97]
 
 connections = []
 
-def pack():
-    return packetID + rak + bytes(str(package), 'utf-8')
-
 def ping():
+    print('Server opened to LAN')
     while 1:
+        raknet.ping(b'\x01', b'\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78', raknet.getUptime(), (localhost, 19132))
         time.sleep(1)
-
-        #s.sendto(sessionID, (localhost, 19132))
-    
-
-def int2bytes(i):
-    hex_string = '%x' % i
-    n = len(hex_string)
-    return binascii.unhexlify(hex_string.zfill(n + (n & 1)))
-
-def send(payload):
-    s.sendto(payload, address)
-    pass
-
-def sendTo(player, payload):
-    load = int(payload, 16)
-    pass
-
+        
 def serverIndex():
     print("Server Started")
 
@@ -45,8 +35,6 @@ def web():
     print("Started Webserver")
     
 if __name__ == "__main__":
-
-    print("██████╗  █████╗ ██████╗  ██████╗ ███╗   ██╗\n██╔══██╗██╔══██╗██╔══██╗██╔═══██╗████╗  ██║\n██████╔╝███████║██║  ██║██║   ██║██╔██╗ ██║\n██╔══██╗██╔══██║██║  ██║██║   ██║██║╚██╗██║\n██║  ██║██║  ██║██████╔╝╚██████╔╝██║ ╚████║\n╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═══╝")
 
     separator = "="
     keys = {}
@@ -77,31 +65,29 @@ if __name__ == "__main__":
     w = threading.Thread(target=web)
     #w.start()
     d = threading.Thread(target=ping)
-    d.start()
+    #d.start()
 
     motd = str(keys["server-name"])
     name = str(keys["level-name"])
-    gamemode = str(keys["gamemode"])
+    gamemode = str(keys["gamemode"]).capitalize()
 
-    s.bind(('', port))
+    raknet.bind('', port)
     print("Server Started")
     players = 0
+    playerInfo = {}
     while 1:
-        message, address = s.recvfrom(2048)
-        id = message[0]
+        message, address = raknet.recv(2048)
+        packetID = message[0]
+        print('\n')
         print(message)
-        if id == 1:
-            sessionID = ''.join(secrets.choice(num) for i in range(20))
-            package = f'MCPE;{motd};503;1.18.32;{players};{max};{sessionID};{name};{gamemode.capitalize()};1;{port};{port+1};'
-            packetID = b'\x1c\x00\x00\x00\x00\x00\x00' + message[8:9] + b'\x84\xad\x43\xa1\x4e\xc2\x4e\xb1'
-            payload = pack()
+        if packetID == 1: # When a client pings the server
+            payload = bytes(f'MCPE;{motd};503;1.18.32;{players};{max};{seed};{name};{gamemode};1;{port};{port};', 'utf-8')
+            raknet.send(b'\x1c', message[1:9], b'\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78', payload, address)
+    
 
-            print(payload)
-            s.sendto(payload , address)
-            
-        if id == 28:
-
-            print(payload)
-            print('\n')
-            s.sendto(payload , address)
-            
+        elif packetID == 5: # Open connection request
+            raknet.reply(b'\x06', b'\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78', address)
+        elif packetID == 7:
+            playerGuid = message[17:]
+            playerInfo.update({playerGuid: address})
+            raknet.reply2(b'\x08', b'\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78', address)
