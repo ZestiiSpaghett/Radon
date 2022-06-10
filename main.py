@@ -1,21 +1,28 @@
-import time, os, sys, socket, threading, struct, binascii,secrets, random, keyboard
+import time, os, sys, socket, threading, struct, binascii,secrets, random, glob, importlib
 import modules.raknet as raknet
-#     from plugins import *
+os.system('cls')
 
-seed = b'06705523625395936369'
+version = '1.19.1'
 
-keyboard.add_hotkey('a', lambda: resetSeed())
+directory = dir_list = os.listdir('plugins')
+c = 0
+print('Importing Plugins...')
+while c < len(directory):
+    d = directory[c].replace('.py', '')
+    exec(f'import plugins.{d}')
+    c += 1
+
+
+listener = b'06705523625395936369'
 
 def resetSeed():
-    global seed
-    seed = ''.join(secrets.choice(num) for i in range(20))
+    num = ['06','70','55','23','62','69','63','59','93','53']
+    global listener
+    listener = ''.join(secrets.choice(num) for i in range(10))
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 localhost = socket.gethostbyname(socket.gethostname())
-
-os.system('cls')
-num = ['0','1','2','3','4','5','6','7','8','9']
 
 primes = [11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97]
 
@@ -65,7 +72,7 @@ if __name__ == "__main__":
     w = threading.Thread(target=web)
     #w.start()
     d = threading.Thread(target=ping)
-    #d.start()
+    # d.start()
 
     motd = str(keys["server-name"])
     name = str(keys["level-name"])
@@ -78,16 +85,23 @@ if __name__ == "__main__":
     while 1:
         message, address = raknet.recv(2048)
         packetID = message[0]
-        print('\n')
+
         print(message)
+        
         if packetID == 1: # When a client pings the server
-            payload = bytes(f'MCPE;{motd};503;1.18.32;{players};{max};{seed};{name};{gamemode};1;{port};{port};', 'utf-8')
-            raknet.send(b'\x1c', message[1:9], b'\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78', payload, address)
-    
+            payload = bytes(f'MCPE;{motd};527;{version};{players};{max};{listener};{name};{gamemode};1;{port};{port};', 'utf-8')
+            raknet.pong(message[1:9], b'\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78', payload, address)
+     
 
         elif packetID == 5: # Open connection request
-            raknet.reply(b'\x06', b'\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78', address)
+
+            raknet.reply(b'\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78', address)
         elif packetID == 7:
+
             playerGuid = message[17:]
             playerInfo.update({playerGuid: address})
-            raknet.reply2(b'\x08', b'\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78', address)
+            raknet.reply2(b'\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78', address)
+
+        elif len(message) > 8:
+            if message[10] == 9:
+                raknet.accept(address)
