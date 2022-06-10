@@ -2,13 +2,13 @@
 Minecraft Bedrock &amp; Java Cross Compatibility Software
 
 # Why use Radon?
-✔️ Radon is a Bedrock based server, making it use less resources and run a lot faster.
+-   [x] Radon is based in python so that you can design your own plugins and addons.
 
-✔️ Radon automatically detects and interprets Minecraft Java player packets so both editions of the game are capable of joining.
+-   [x] Radon automatically detects and interprets Minecraft Java player packets so both editions of the game are capable of joining.
 
-✔️ This project is 100% open source.
+-   [x] This project is 100% open source.
 
-✔️ The Radon project will continued to be worked on, so it will improve over time.
+-   [x] The Radon project will continued to be worked on, so it will improve over time.
 
 Citations:
 https://forum.hivemc.com/threads/hive-java-edition.339307/
