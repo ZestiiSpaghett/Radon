@@ -16,9 +16,12 @@ https://forum.hivemc.com/threads/hive-java-edition.339307/
 # Notes
 This is a work in progress, it does NOT work at the moment.
 
-# Updates/Checklist
+# To do list:
 1. Working on Java interpretation
+2. Login packet data
+3. Plugin events
 
 # Info
 This is a list of the packets used by MCBE: https://github.com/NiclasOlofsson/MiNET/blob/master/src/MiNET/MiNET/Net/MCPE%20Protocol%20Documentation.md
 
+Feel free to contribute because we need all the help we can get!
